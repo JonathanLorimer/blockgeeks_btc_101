@@ -52,6 +52,26 @@ class WebAPI {
 			})
 		})
 	}
+
+	getUtxos(addr) {
+		const url = this.api + this.network + '/addrs/' + addr + '?unspentOnly=true&includesScript=true'
+
+		return new Promise ((resolve, reject) => {
+			request(url, (err, res, body) => {
+				if (err) reject(err)
+				const data = JSON.parse(body)
+				const result = data.txrefs.map(tx => {
+					return {
+						hash: tx.tx_hash,
+						index: tx.tx_output_n,
+						value: tx.value,
+						script: tx.script
+					}
+				})
+				resolve({data: result})
+			})
+		})
+	}
 }
 
 module.exports = WebAPI

@@ -94,5 +94,6 @@ const createWallet = (network = "mainnet", importKey = 0) => {
 
 module.exports = {
 	createWallet,
-	getNetworkFromKey
+	getNetworkFromKey,
+	getKeyHashFromAddr
 }

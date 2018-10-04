@@ -1,7 +1,7 @@
-const WebAPI = require('./src/webapi')
+const wallet = require('./src/simpleWallet')
 
-let api = new WebAPI()
-
-
-api.changeNetwork("testnet")
-api.getNetworkInfo().then(info => console.log(info))
+wallet.createWallet('', 'key')
+.then(w => {
+	return wallet.sendBitcoin(0.1, "address")
+})
+.then(tx => console.log(tx))

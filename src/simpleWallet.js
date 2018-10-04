@@ -2,7 +2,7 @@
 
 const WebAPI = require('./webapi')
 const keys = require('./keys')
-
+const tx = require('./transaction')
 class SimpleWallet {
 	constructor() {
 		this.api = new WebAPI()
@@ -28,6 +28,19 @@ class SimpleWallet {
 		return new Promise((resolve, reject) => {
 			resolve(this.wallet)
 		})
+	}
+
+	sendBitcoin(amount, toAddr) {
+		amount = (amount * COIN) / 1 //concert to number of satoshis
+
+		return new Promise((resolve, reject) => {
+			this.api.getUtxos(this.wallet.address).then(utxo => {
+				return tx.create(utxo, amount, toAddr, this.wallet)
+			}).then(tx => {
+				resolve(tx)
+			}).catch(err => reject(err))
+		})
+		
 	}
 }
 
