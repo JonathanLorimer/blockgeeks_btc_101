@@ -2,6 +2,7 @@
 
 // const blockCypherURL = 'https://api.blockcypher.com/v1/btc/main'
 const request = require('request')
+const COIN = 1000000
 
 class WebAPI {
 	constructor(){
@@ -36,6 +37,18 @@ class WebAPI {
 					number: result.height,
 					time: result.time
 				})
+			})
+		})
+	}
+
+	getBalance(addr) {
+		const url = this.api + this.network + '/addrs/' + addr +'/balance'
+
+		return new Promise((resolve, reject) => {
+			request(url, (err, res, body) => {
+				if (err) reject(err)
+				const result = JSON.parse(body)
+				resolve(result.balance / COIN)
 			})
 		})
 	}

@@ -4,7 +4,7 @@ const browserify = require('browserify')
 const source = require('vinyl-source-stream')
 
 gulp.task('default', () => {
-	browserify('./src/webapi.js', {standalone: 'bitcoin', debug: true})
+	browserify('./src/simplewallet.js', {standalone: 'bitcoin', debug: true})
 	.transform(babelify, {presets: ['es2015']})
 	.bundle()
 	.pipe(source('bundle.js'))

@@ -10,12 +10,11 @@ $('#new-wallet-form').on('submit', (e) => {
 	e.preventDefault(e)
 	let network = $('input[name=network]:checked').val()
 
-	// TODO: Create New Wallet
-
-	$('#new-wallet-form')[0].reset()
-	$('#new-wallet').hide()
-	$('#output-area').html(generateNewWalletInfo())
-
+	bitcoin.createWallet(network).then((wallet) => {
+		$('#new-wallet-form')[0].reset()
+		$('#new-wallet').hide()
+		$('#output-area').html(generateNewWalletInfo())
+	})
 })
 
 //New Wallet confirmation button click
@@ -45,11 +44,18 @@ $('#old-wallet-form').on('submit', (e)=>{
 	e.preventDefault(e)
 	let key = $('#input[name="cipher"]').val()
 
-	// TODO: import wallet from key
-
-	$('#old-wallet-form')[0].reset()
-	$('#old-wallet').hide()
-	$('output-area').html(generateWalletUI())
+	bitcoin.createWallet("", key).then((wallet) => {
+		if(wallet.privateKey === key){
+			$('#old-wallet-form')[0].reset()
+			$('#old-wallet').hide()
+			$('output-area').html(generateWalletUI())
+			updateBtcBalance()
+		} else {
+			displayAlert("danger", "Not a valid key, only WIF-compresed format is supported!")
+		}
+	}).catch((err) => {
+		displayAlert("danger", "Not a valid key, only WIF-compresed format is supported!")
+	})
 })
 
 // HELPERS
@@ -64,10 +70,10 @@ const displayAlert = (type, msg) => {
 }
 
 const generateNewWalletInfo = () => {
-	//TODO: Show actual key
+
 	var html =`
 		<h4> Save your private key and DO NOT lose it! </h4>
-		<div class='key-info'>1234</div>
+		<div class='key-info'>${bitcoin.getWallet().privateKey}</div>
 		<button id='confirm-key' type='submit' class='btn btn-secondary'> Ok, got it!</button>
 
 	`
@@ -75,10 +81,9 @@ const generateNewWalletInfo = () => {
 }
 
 const generateWalletUI = () => {
-	//TODO: Actually show balance and address
 	let html = `
 		<h5 id='btc-balance'> Balance: </h5>
-		<h5>Address: 0x12ev4123v5c6x7</h5>
+		<h5>Address: ${bitcoin.getWallet().address}</h5>
 		<h5>Send Transaction</h5>
 		<form id="tx-form'>
 			<div class='form-group'>
@@ -89,4 +94,10 @@ const generateWalletUI = () => {
 		</form>
 	`
 	return html
+}
+
+const updateBtcBalance = () => {
+	bitcoin.getBalance().then((balance) => {
+		$('#btc-balance').html("Balance: " + balance + " BTC")
+	})
 }
